@@ -3,6 +3,8 @@ const cors = require("cors");
 const ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
+//script api secret key
+const stripe = require(process.env.STRIPE_SECRET);
 
 const app = express();
 const port = process.env.PORT || 4000
@@ -163,6 +165,19 @@ async function run() {
             const result = await carsCollection.deleteOne(query);
             res.json(result);
             console.log(result);
+        })
+        //payment get api with stripe
+        app.get("/create-payment-intent", async (req, res) => {
+            const paymentInfo = req.body;
+            const amount = paymentInfo.price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: "usd",
+                amount: amount,
+                payment_method_types: ["card"],
+            })
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            })
         })
     }
     finally {
