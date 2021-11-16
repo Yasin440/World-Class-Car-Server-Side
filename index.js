@@ -4,7 +4,8 @@ const ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 //script api secret key
-const stripe = require(process.env.STRIPE_SECRET);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
+// app.use(express.static("public"));
 
 const app = express();
 const port = process.env.PORT || 4000
@@ -166,8 +167,8 @@ async function run() {
             res.json(result);
             console.log(result);
         })
-        //payment get api with stripe
-        app.get("/create-payment-intent", async (req, res) => {
+        //payment post api with stripe
+        app.post("/create-payment-intent", async (req, res) => {
             const paymentInfo = req.body;
             const amount = paymentInfo.price * 100;
             const paymentIntent = await stripe.paymentIntents.create({
@@ -175,7 +176,7 @@ async function run() {
                 amount: amount,
                 payment_method_types: ["card"],
             })
-            res.send({
+            res.json({
                 clientSecret: paymentIntent.client_secret,
             })
         })
