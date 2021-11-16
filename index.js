@@ -71,6 +71,12 @@ async function run() {
             const allMyOrderedCars = await cursor.toArray();
             res.send(allMyOrderedCars);
         })
+        app.get('/orderedCars/payment/:_id', async (req, res) => {
+            const id = req.params._id;
+            const query = { _id: ObjectId(id) };
+            const result = await carOrdersCollection.findOne(query);
+            res.send(result);
+        })
 
         //get api for one car doc with id query
         app.get('/carDetails/:_id', async (req, res) => {
