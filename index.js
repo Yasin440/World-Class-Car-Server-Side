@@ -154,11 +154,13 @@ async function run() {
         // put api to update order payment status
         app.put('/ordered_car/payment_status/:_id', async (req, res) => {
             const id = req.params._id;
+            const paymentInfo = req.body;
             const query = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
-                    status: "paid"
+                    status: "paid",
+                    paymentInfo: paymentInfo
                 },
             }
             const result = await carOrdersCollection.updateOne(query, updateDoc, options);
