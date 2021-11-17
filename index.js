@@ -142,25 +142,25 @@ async function run() {
         app.put('/ordered_car/status/:_id', async (req, res) => {
             const id = req.params._id;
             const query = { _id: ObjectId(id) };
-            const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     status: "approved"
                 },
             }
-            const result = await carOrdersCollection.updateOne(query, updateDoc, options);
+            const result = await carOrdersCollection.updateOne(query, updateDoc);
             res.json(result);
         })
         // put api to update order payment status
         app.put('/ordered_car/payment_status/:_id', async (req, res) => {
             const id = req.params._id;
             const paymentInfo = req.body;
+            console.log(paymentInfo);
             const query = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     status: "paid",
-                    paymentInfo: paymentInfo
+                    paymentInfo: paymentInfo,
                 },
             }
             const result = await carOrdersCollection.updateOne(query, updateDoc, options);
