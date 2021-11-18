@@ -2,10 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require("mongodb");
+const fileUpload = require('express-fileupload');
 require("dotenv").config();
 //script api secret key
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
-// app.use(express.static("public"));
+//---------- app.use(express.static("public"));
 
 const app = express();
 const port = process.env.PORT || 4000
@@ -13,6 +14,7 @@ const port = process.env.PORT || 4000
 //middleware
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nort6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -106,7 +108,19 @@ async function run() {
 
         //POST API to add cars in carsCollection
         app.post('/addCars', async (req, res) => {
-            const newCar = req.body;
+            const clientName = req.body.clientName;
+            const name = req.body.name;
+            const email = req.body.email;
+            const price = req.body.price;
+            const details = req.body.details;
+            const picture = req.body.picture;
+            const picData = req.files.picture2.data;
+            const encodedPic = picData.toString('base64');
+            const imgBuffer = Buffer.from(encodedPic, 'base64');
+            const newCar =
+            {
+                clientName, name, email, price, picture, picture2: imgBuffer, details
+            }
             const result = await carsCollection.insertOne(newCar);
             res.json(result);
         })
